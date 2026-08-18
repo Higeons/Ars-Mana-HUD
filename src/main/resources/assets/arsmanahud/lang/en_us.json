@@ -1,0 +1,6 @@
+{
+  "hud.arsmanahud.mana": "%s / %s",
+  "hud.arsmanahud.regen": "+%s/s",
+  "hud.arsmanahud.cost": "Mana Cost: %smana",
+  "hud.arsmanahud.cost_short": "%smana"
+}

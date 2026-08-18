@@ -1,0 +1,31 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Run directories
+run/
+
+# Datagen output
+src/generated/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# NeoGradle unpacked / patched artifacts at the repo ROOT (must never be committed).
+# Anchored to the root: unanchored com/ META-INF/ etc. would also match the
+# mod sources under src/main/java/com and src/main/resources/META-INF.
+/com/
+/net/
+/patches/
+/META-INF/
