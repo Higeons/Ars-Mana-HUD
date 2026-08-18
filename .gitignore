@@ -1,0 +1,23 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Run directories
+run/
+
+# Datagen output
+src/generated/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# OS
+Thumbs.db
+.DS_Store
