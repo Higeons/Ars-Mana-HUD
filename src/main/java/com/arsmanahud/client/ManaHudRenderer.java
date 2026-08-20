@@ -22,8 +22,6 @@ public final class ManaHudRenderer {
     private static final int MANA_BAR_WIDTH = 108;
     /** Gap between the right edge of the mana bar and the regen text, in pixels. */
     private static final int REGEN_TEXT_GAP = 4;
-    /** Vertical distance between the top of the mana bar and the spell cost text above it. */
-    private static final int SPELL_COST_ABOVE_BAR = 28;
 
     private static boolean initialized;
     private static boolean lastVisible;
@@ -89,16 +87,18 @@ public final class ManaHudRenderer {
         guiGraphics.drawString(minecraft.font, cachedRegenText, regenTextX, textY, 0xFFFFFF, true);
 
         // Feature 4: estimated mana cost of the selected spell for held caster tools.
-        renderSpellCost(minecraft, guiGraphics, offsetLeft, yOffset);
+        renderSpellCost(minecraft, guiGraphics);
     }
 
     /**
      * Feature 4: render the estimated mana cost of the selected spell for the held
-     * caster tool (e.g. Enchanter's Eye, Caster Tome). For spell books the cost is
-     * drawn to the right of the spell name line rendered by GuiSpellHUD (which sits
-     * above the mana bar); for other caster tools it is drawn directly above the bar.
+     * caster tool (e.g. Enchanter's Eye, Caster Tome). All caster tools share one
+     * bottom-left line ("slot number + spell name + Mana Cost: X") aligned with the
+     * spell book line that GuiSpellHUD renders at (10, screenH-30); the spell name
+     * prefix is only drawn here for non-spell-book tools, since GuiSpellHUD already
+     * renders it for spell books.
      */
-    private static void renderSpellCost(Minecraft minecraft, GuiGraphics guiGraphics, int offsetLeft, int yOffset) {
+    private static void renderSpellCost(Minecraft minecraft, GuiGraphics guiGraphics) {
         ItemStack mainHand = minecraft.player.getMainHandItem();
         ItemStack casterStack = mainHand.getItem() instanceof ICasterTool ? mainHand : ItemStack.EMPTY;
         if (casterStack.isEmpty()) {
@@ -118,17 +118,14 @@ public final class ManaHudRenderer {
         }
 
         int cost = ArsManaHudEvents.spellCost(minecraft.player, spell, casterStack);
-        String text = Component.translatable("hud." + ArsManaHud.MODID + ".cost", cost).getString();
+        String costText = Component.translatable("hud." + ArsManaHud.MODID + ".cost", cost).getString();
 
-        if (casterStack.getItem() instanceof SpellBook) {
-            // To the right of the spell name rendered by GuiSpellHUD (x=10, y=screenH-30).
-            String name = caster.getCurrentSlot() + 1 + " " + caster.getSpellName();
-            int x = 10 + minecraft.font.width(name) + REGEN_TEXT_GAP;
-            int y = minecraft.getWindow().getGuiScaledHeight() - 30;
-            guiGraphics.drawString(minecraft.font, text, x, y, 0xFFFFFF, true);
-        } else {
-            // Above the mana bar.
-            guiGraphics.drawString(minecraft.font, text, offsetLeft, yOffset - SPELL_COST_ABOVE_BAR, 0xFFFFFF, true);
+        String name = caster.getCurrentSlot() + 1 + " " + caster.getSpellName();
+        int x = 10 + minecraft.font.width(name) + REGEN_TEXT_GAP;
+        int y = minecraft.getWindow().getGuiScaledHeight() - 30;
+        if (!(casterStack.getItem() instanceof SpellBook)) {
+            guiGraphics.drawString(minecraft.font, name, 10, y, 0xFFFFFF, true);
         }
+        guiGraphics.drawString(minecraft.font, costText, x, y, 0xFFFFFF, true);
     }
 }
