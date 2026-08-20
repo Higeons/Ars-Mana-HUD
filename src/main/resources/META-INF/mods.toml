@@ -39,3 +39,10 @@ A client-side addon for Ars Nouveau (Forge 1.20.1). Overlays "current mana / max
     versionRange="[4.12.0,)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.arsmanahud]]
+    modId="jade"
+    mandatory=true
+    versionRange="[11.13.3,)"
+    ordering="NONE"
+    side="BOTH"

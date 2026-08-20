@@ -97,6 +97,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     // BlameJared maven hosts the official Ars Nouveau builds.
     maven { url = 'https://maven.blamejared.com' }
+    // CurseMaven hosts Jade (project 324717) for the Forge 1.20.1 toolchain.
+    maven { url = 'https://www.cursemaven.com' }
 }
 
 dependencies {
@@ -114,6 +116,16 @@ dependencies {
     }
     // Add the same jar to dev runtimes (runClient / runServer) so the mana API is available while testing.
     runtimeOnly fg.deobf("com.hollingsworth.ars_nouveau:ars_nouveau-1.20.1:${ars_nouveau_version}") {
+        transitive = false
+    }
+
+    // Jade - compile time only. The mod itself is provided at runtime by the user's mods folder.
+    // transitive = false avoids having to resolve its runtime dependencies.
+    compileOnly fg.deobf("curse.maven:jade-324717:${jade_file_id}") {
+        transitive = false
+    }
+    // Add the same jar to dev runtimes so the Jade tooltip integration is testable.
+    runtimeOnly fg.deobf("curse.maven:jade-324717:${jade_file_id}") {
         transitive = false
     }
 }
