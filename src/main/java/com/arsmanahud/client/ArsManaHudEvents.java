@@ -1,15 +1,19 @@
 package com.arsmanahud.client;
 
 import com.arsmanahud.ArsManaHud;
+import com.hollingsworth.arsnouveau.api.item.ICasterTool;
 import com.hollingsworth.arsnouveau.api.registry.GlyphRegistry;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
+import com.hollingsworth.arsnouveau.api.spell.ISpellCaster;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
+import com.hollingsworth.arsnouveau.api.util.CasterUtil;
 import com.hollingsworth.arsnouveau.api.util.ManaUtil;
 import com.hollingsworth.arsnouveau.client.gui.GuiUtils;
 import com.hollingsworth.arsnouveau.client.gui.book.GuiSpellBook;
 import com.hollingsworth.arsnouveau.client.gui.buttons.CraftingButton;
 import com.hollingsworth.arsnouveau.client.gui.buttons.GlyphButton;
 import com.hollingsworth.arsnouveau.common.items.Glyph;
+import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
@@ -60,18 +64,32 @@ public final class ArsManaHudEvents {
      * Feature 1: append "Mana Cost: Xmana" right after the glyph level line of
      * glyph items in inventories and JEI. The glyph level line uses the same
      * localization key as the spell book GUI tooltip, so the insertion logic is shared.
+     * <p>
+     * Caster tools other than the spell book (Caster Tome, Enchanter's Eye, ...)
+     * get the mana cost of their currently selected spell appended to the tooltip;
+     * the spell book itself is skipped because its tooltip already lists its spells.
      */
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
-        if (!(event.getItemStack().getItem() instanceof Glyph glyph)) {
+        ItemStack stack = event.getItemStack();
+        if (stack.getItem() instanceof Glyph glyph) {
+            AbstractSpellPart part = glyph.spellPart;
+            if (part == null) {
+                return;
+            }
+            insertCostLineAfterLevel(event.getToolTip(), part,
+                    Component.translatable("hud." + ArsManaHud.MODID + ".cost", partCost(part)));
             return;
         }
-        AbstractSpellPart part = glyph.spellPart;
-        if (part == null) {
-            return;
+        if (!(stack.getItem() instanceof SpellBook) && stack.getItem() instanceof ICasterTool) {
+            ISpellCaster caster = CasterUtil.getCaster(stack);
+            Spell spell = caster.getSpell(caster.getCurrentSlot());
+            if (spell == null || spell.isEmpty()) {
+                return;
+            }
+            event.getToolTip().add(Component.translatable(
+                    "hud." + ArsManaHud.MODID + ".cost", spellCost(event.getEntity(), spell, stack)));
         }
-        insertCostLineAfterLevel(event.getToolTip(), part,
-                Component.translatable("hud." + ArsManaHud.MODID + ".cost", partCost(part)));
     }
 
     /**
