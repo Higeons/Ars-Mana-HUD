@@ -13,9 +13,10 @@ version="${mod_version}" #mandatory
 # A display name for the mod
 displayName="${mod_name}" #mandatory
 # The description text for the mod (multi line!) (#mandatory)
+# Keep in sync with gradle.properties mod_description. Note: gradle.properties is
+# read as ISO-8859-1 by Java Properties, so non-ASCII text must live here, not there.
 description='''
-A client-side addon for Ars Nouveau (Forge 1.20.1). Overlays "current mana / max mana" on the Ars Nouveau mana bar and shows the mana regeneration rate to the right of the bar.
-新生魔艺附属模组：在新生魔艺魔力条上叠加显示“当前魔力值 / 总魔力值”，并在魔力条右侧显示魔力恢复速度。
+一个新生魔艺附属模组，为模组内的多种与魔力有关的物品提供增强显示。
 '''
 
 # A dependency - use the . to indicate dependency for a specific modid.
