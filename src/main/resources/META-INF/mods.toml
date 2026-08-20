@@ -42,7 +42,7 @@ A client-side addon for Ars Nouveau (Forge 1.20.1). Overlays "current mana / max
 
 [[dependencies.arsmanahud]]
     modId="jade"
-    mandatory=true
-    versionRange="[11.13.3,)"
+    mandatory=false
+    versionRange="[11.13.2,)"
     ordering="NONE"
     side="BOTH"
