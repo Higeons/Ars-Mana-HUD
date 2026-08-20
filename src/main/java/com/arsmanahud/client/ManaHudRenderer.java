@@ -122,10 +122,12 @@ public final class ManaHudRenderer {
 
         if (casterStack.getItem() instanceof SpellBook) {
             // To the right of the spell name rendered by GuiSpellHUD (x=10, y=screenH-30).
+            // Drawn without shadow to match GuiSpellHUD's rendering, so the cost text
+            // stays pixel-aligned with the "spell number + spell name" line.
             String name = caster.getCurrentSlot() + 1 + " " + caster.getSpellName();
             int x = 10 + minecraft.font.width(name) + REGEN_TEXT_GAP;
             int y = minecraft.getWindow().getGuiScaledHeight() - 30;
-            guiGraphics.drawString(minecraft.font, text, x, y, 0xFFFFFF, true);
+            guiGraphics.drawString(minecraft.font, text, x, y, 0xFFFFFF, false);
         } else {
             // Above the mana bar.
             guiGraphics.drawString(minecraft.font, text, offsetLeft, yOffset - SPELL_COST_ABOVE_BAR, 0xFFFFFF, true);
