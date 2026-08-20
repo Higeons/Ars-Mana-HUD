@@ -3,6 +3,7 @@ package com.arsmanahud.jade;
 import com.arsmanahud.ArsManaHud;
 import com.hollingsworth.arsnouveau.api.potion.PotionData;
 import com.hollingsworth.arsnouveau.api.source.ISourceTile;
+import com.hollingsworth.arsnouveau.common.block.Relay;
 import com.hollingsworth.arsnouveau.common.block.tile.PotionJarTile;
 import com.hollingsworth.arsnouveau.common.block.tile.SourceJarTile;
 import net.minecraft.network.chat.Component;
@@ -20,6 +21,7 @@ import snownee.jade.api.config.IPluginConfig;
  *   <li>Source jars (incl. creative): "魔源量：X/Y"</li>
  *   <li>Potion jars: "XX药水：X/Y mB" (only when a potion is stored)</li>
  *   <li>Sourcelinks (魔源通道): "缓存量：X/Y" (their internal source cache)</li>
+ *   <li>Mana relays (魔源中继器, all 5 variants): "缓存量：X/Y" + "吞吐量：X/s"</li>
  * </ul>
  * The line is drawn directly above the mod-name line: Jade's mod name provider
  * uses priority 9999, so this provider uses 9998 and appends a regular line,
@@ -38,31 +40,37 @@ public enum ContainerAmountProvider implements IBlockComponentProvider {
             return;
         }
 
-        Component amountLine = null;
         if (blockEntity instanceof SourceJarTile sourceJar) {
-            amountLine = Component.translatable(
+            tooltip.add(Component.translatable(
                     "hud." + ArsManaHud.MODID + ".jade.source",
-                    sourceJar.getSource(), sourceJar.getMaxSource());
-        } else if (blockEntity instanceof PotionJarTile potionJar) {
+                    sourceJar.getSource(), sourceJar.getMaxSource()));
+            return;
+        }
+        if (blockEntity instanceof PotionJarTile potionJar) {
             PotionData data = potionJar.getData();
             // An empty jar has no potion type to name, so there is nothing useful to add.
             if (data == null || data.getPotion() == Potions.EMPTY) {
                 return;
             }
-            amountLine = Component.translatable(
+            tooltip.add(Component.translatable(
                     "hud." + ArsManaHud.MODID + ".jade.potion",
                     data.asPotionStack().getHoverName(),
-                    potionJar.getAmount(), potionJar.getMaxFill());
-        } else if (blockEntity instanceof ISourceTile sourceTile) {
-            // This provider is only registered for SourcelinkBlock (魔源通道), whose
-            // tiles expose their internal source cache through ISourceTile.
-            amountLine = Component.translatable(
-                    "hud." + ArsManaHud.MODID + ".jade.cache",
-                    sourceTile.getSource(), sourceTile.getMaxSource());
+                    potionJar.getAmount(), potionJar.getMaxFill()));
+            return;
         }
-
-        if (amountLine != null) {
-            tooltip.add(amountLine);
+        if (blockEntity instanceof ISourceTile sourceTile) {
+            // Sourcelinks (魔源通道) and mana relays (魔源中继器) both buffer source.
+            // The relay tile class itself references geckolib, so relays are
+            // recognized through their block superclass instead (all five relay
+            // variants extend Relay; the provider is only registered for those blocks).
+            tooltip.add(Component.translatable(
+                    "hud." + ArsManaHud.MODID + ".jade.cache",
+                    sourceTile.getSource(), sourceTile.getMaxSource()));
+            if (accessor.getBlock() instanceof Relay) {
+                tooltip.add(Component.translatable(
+                        "hud." + ArsManaHud.MODID + ".jade.throughput",
+                        sourceTile.getTransferRate()));
+            }
         }
     }
 

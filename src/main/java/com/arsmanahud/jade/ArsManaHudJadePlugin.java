@@ -2,6 +2,7 @@ package com.arsmanahud.jade;
 
 import com.arsmanahud.ArsManaHud;
 import com.hollingsworth.arsnouveau.common.block.PotionJar;
+import com.hollingsworth.arsnouveau.common.block.Relay;
 import com.hollingsworth.arsnouveau.common.block.SourceJar;
 import com.hollingsworth.arsnouveau.common.block.SourcelinkBlock;
 import snownee.jade.api.IWailaClientRegistration;
@@ -14,8 +15,10 @@ import snownee.jade.api.WailaPlugin;
  * <p>
  * Only client-side tooltip lines are added, so no common-side registration is
  * needed. Jade's hierarchy lookup walks superclasses: registering for
- * {@link SourceJar} also covers {@code CreativeSourceJar}, and registering for
- * {@link SourcelinkBlock} covers all five sourcelink (魔源通道) variants.
+ * {@link SourceJar} also covers {@code CreativeSourceJar}, registering for
+ * {@link SourcelinkBlock} covers all five sourcelink (魔源通道) variants, and
+ * registering for {@link Relay} covers all five relay (魔源中继器) variants
+ * (splitter / collector / deposit / warp).
  */
 @WailaPlugin(ArsManaHud.MODID)
 public class ArsManaHudJadePlugin implements IWailaPlugin {
@@ -25,5 +28,6 @@ public class ArsManaHudJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(ContainerAmountProvider.INSTANCE, SourceJar.class);
         registration.registerBlockComponent(ContainerAmountProvider.INSTANCE, PotionJar.class);
         registration.registerBlockComponent(ContainerAmountProvider.INSTANCE, SourcelinkBlock.class);
+        registration.registerBlockComponent(ContainerAmountProvider.INSTANCE, Relay.class);
     }
 }
