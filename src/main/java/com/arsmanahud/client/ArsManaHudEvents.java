@@ -17,11 +17,13 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -31,6 +33,7 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -87,9 +90,34 @@ public final class ArsManaHudEvents {
             if (spell == null || spell.isEmpty()) {
                 return;
             }
-            event.getToolTip().add(Component.translatable(
-                    "hud." + ArsManaHud.MODID + ".cost", spellCost(event.getEntity(), spell, stack)));
+            addCostLineAboveAdvanced(event.getToolTip(),
+                    Component.translatable("hud." + ArsManaHud.MODID + ".cost",
+                            spellCost(event.getEntity(), spell, stack)),
+                    stack);
         }
+    }
+
+    /**
+     * Adds the cost line to the tooltip, inserting it above the F3+H advanced
+     * tooltip block when present. Forge 1.20.1 appends that block (the item
+     * registry name and "NBT: X tags", both dark gray) at the very end of the
+     * tooltip before firing ItemTooltipEvent, so a plain append would place the
+     * cost line below the advanced info. Falls back to appending when the block
+     * is absent (e.g. advanced tooltips disabled or JEI).
+     */
+    private static void addCostLineAboveAdvanced(List<Component> tooltip, Component costLine, ItemStack stack) {
+        String registryKey = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
+        for (int i = 0; i < tooltip.size(); i++) {
+            Component line = tooltip.get(i);
+            TextColor color = line.getStyle().getColor();
+            if (color != null
+                    && color.getValue() == ChatFormatting.DARK_GRAY.getColor().intValue()
+                    && line.getString().equals(registryKey)) {
+                tooltip.add(i, costLine);
+                return;
+            }
+        }
+        tooltip.add(costLine);
     }
 
     /**
