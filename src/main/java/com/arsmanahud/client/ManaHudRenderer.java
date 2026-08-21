@@ -120,7 +120,12 @@ public final class ManaHudRenderer {
         int cost = ArsManaHudEvents.spellCost(minecraft.player, spell, casterStack);
         String costText = Component.translatable("hud." + ArsManaHud.MODID + ".cost", cost).getString();
 
-        String name = caster.getCurrentSlot() + 1 + " " + caster.getSpellName();
+        // Spell books have multiple slots, so their name keeps the slot number
+        // prefix (matching GuiSpellHUD); other caster tools hold a single spell,
+        // so their name is rendered without the number.
+        String name = casterStack.getItem() instanceof SpellBook
+                ? caster.getCurrentSlot() + 1 + " " + caster.getSpellName()
+                : caster.getSpellName();
         int x = 10 + minecraft.font.width(name) + REGEN_TEXT_GAP;
         int y = minecraft.getWindow().getGuiScaledHeight() - 30;
         if (!(casterStack.getItem() instanceof SpellBook)) {
