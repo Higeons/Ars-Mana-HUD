@@ -19,6 +19,10 @@ import snownee.jade.api.WailaPlugin;
  * {@link SourcelinkBlock} covers all five sourcelink (魔源通道) variants, and
  * registering for {@link Relay} covers all five relay (魔源中继器) variants
  * (splitter / collector / deposit / warp).
+ * <p>
+ * Packs that replace Jade's plugin scan with a whitelist (e.g. GregTech Odyssey's
+ * gtocore) never reach this class; {@link JadeDirectRegistration} re-registers the
+ * same providers directly on Jade's registration singleton as a fallback.
  */
 @WailaPlugin(ArsManaHud.MODID)
 public class ArsManaHudJadePlugin implements IWailaPlugin {

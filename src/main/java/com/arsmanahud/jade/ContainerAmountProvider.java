@@ -39,11 +39,15 @@ public enum ContainerAmountProvider implements IBlockComponentProvider {
         if (blockEntity == null) {
             return;
         }
-
+        // Lines are tagged with the provider UID and removed before adding, so the
+        // provider can be registered twice (plugin scan + direct registration, see
+        // JadeDirectRegistration) without duplicating lines on the same tooltip.
+        ResourceLocation uid = getUid();
         if (blockEntity instanceof SourceJarTile sourceJar) {
+            tooltip.remove(uid);
             tooltip.add(Component.translatable(
                     "hud." + ArsManaHud.MODID + ".jade.source",
-                    sourceJar.getSource(), sourceJar.getMaxSource()));
+                    sourceJar.getSource(), sourceJar.getMaxSource()), uid);
             return;
         }
         if (blockEntity instanceof PotionJarTile potionJar) {
@@ -52,10 +56,11 @@ public enum ContainerAmountProvider implements IBlockComponentProvider {
             if (data == null || data.getPotion() == Potions.EMPTY) {
                 return;
             }
+            tooltip.remove(uid);
             tooltip.add(Component.translatable(
                     "hud." + ArsManaHud.MODID + ".jade.potion",
                     data.asPotionStack().getHoverName(),
-                    potionJar.getAmount(), potionJar.getMaxFill()));
+                    potionJar.getAmount(), potionJar.getMaxFill()), uid);
             return;
         }
         if (blockEntity instanceof ISourceTile sourceTile) {
@@ -63,13 +68,14 @@ public enum ContainerAmountProvider implements IBlockComponentProvider {
             // The relay tile class itself references geckolib, so relays are
             // recognized through their block superclass instead (all five relay
             // variants extend Relay; the provider is only registered for those blocks).
+            tooltip.remove(uid);
             tooltip.add(Component.translatable(
                     "hud." + ArsManaHud.MODID + ".jade.cache",
-                    sourceTile.getSource(), sourceTile.getMaxSource()));
+                    sourceTile.getSource(), sourceTile.getMaxSource()), uid);
             if (accessor.getBlock() instanceof Relay) {
                 tooltip.add(Component.translatable(
                         "hud." + ArsManaHud.MODID + ".jade.throughput",
-                        sourceTile.getTransferRate()));
+                        sourceTile.getTransferRate()), uid);
             }
         }
     }
