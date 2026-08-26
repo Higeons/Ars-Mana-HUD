@@ -20,9 +20,13 @@ public class ManaHudClient {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        // Fires before Jade's FMLLoadCompleteEvent plugin scan, so the direct
-        // registration is already in place when Jade builds its provider lists.
-        // No-op when Jade is not installed.
-        JadeDirectRegistration.registerIfPresent();
+        // enqueueWork defers the direct Jade registration to the render thread,
+        // running AFTER every mod's client-setup handler has finished. Jade's
+        // registration singleton is not thread-safe, and other mods (e.g. visualmana)
+        // register directly during the parallel client-setup dispatch; serializing
+        // our writes prevents concurrent corruption of Jade's PriorityStore map.
+        // The registration still lands before Jade's FMLLoadCompleteEvent plugin
+        // scan. No-op when Jade is not installed.
+        event.enqueueWork(JadeDirectRegistration::registerIfPresent);
     }
 }
