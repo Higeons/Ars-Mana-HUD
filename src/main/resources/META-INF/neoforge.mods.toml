@@ -20,8 +20,7 @@ displayName="${mod_name}" #mandatory
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-A client-side addon for Ars Nouveau (NeoForge 1.21.1). Overlays "current mana / max mana" on the Ars Nouveau mana bar and shows the mana regeneration rate to the right of the bar.
-新生魔艺附属模组：在新生魔艺魔力条上叠加显示“当前魔力 / 总魔力”，并在魔力条右侧显示魔力恢复速度。
+一个新生魔艺附属模组，为模组内的多种与魔力有关的物品提供增强显示。
 '''
 
 # A dependency - use the . to indicate dependency for a specific modid.
