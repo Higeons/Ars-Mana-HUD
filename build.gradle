@@ -28,6 +28,8 @@ sourceSets.main.resources {
 repositories {
     // BlameJared maven hosts the official Ars Nouveau builds.
     maven { url = 'https://maven.blamejared.com' }
+    // Modrinth's maven hosts Jade for the NeoForge 1.21.1 toolchain.
+    maven { url = 'https://api.modrinth.com/maven' }
 }
 
 base {
@@ -118,6 +120,16 @@ dependencies {
         transitive = false
     }
     localRuntime("com.hollingsworth.nuggets:nuggets-neoforge-1.21.1:1.1.0.48") {
+        transitive = false
+    }
+
+    // Jade - compile time only. The mod itself is provided at runtime by the user's mods folder.
+    // transitive = false avoids having to resolve its runtime dependencies.
+    compileOnly("maven.modrinth:jade:${jade_version}") {
+        transitive = false
+    }
+    // Add the same jar to dev runtimes so the Jade tooltip integration is testable.
+    localRuntime("maven.modrinth:jade:${jade_version}") {
         transitive = false
     }
 }

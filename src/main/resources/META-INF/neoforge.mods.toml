@@ -45,3 +45,10 @@ A client-side addon for Ars Nouveau (NeoForge 1.21.1). Overlays "current mana / 
     versionRange="[5.13.0,)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.arsmanahud]]
+    modId="jade"
+    type="optional"
+    versionRange="[15.10.6,)"
+    ordering="NONE"
+    side="BOTH"
