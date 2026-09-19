@@ -1,7 +1,7 @@
 {
   "hud.arsmanahud.mana": "%s / %s",
   "hud.arsmanahud.regen": "+%s/s",
-  "hud.arsmanahud.cost": "魔力消耗：%smana",
+  "hud.arsmanahud.cost": "魔力消耗：%s",
   "hud.arsmanahud.cost_short": "%smana",
   "hud.arsmanahud.jade.source": "魔源量：%s/%s",
   "hud.arsmanahud.jade.potion": "%s：%s/%s mB",

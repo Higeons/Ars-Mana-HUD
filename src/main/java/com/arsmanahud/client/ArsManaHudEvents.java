@@ -1,7 +1,10 @@
 package com.arsmanahud.client;
 
 import com.arsmanahud.ArsManaHud;
+import com.hollingsworth.arsnouveau.api.item.ICasterTool;
 import com.hollingsworth.arsnouveau.api.registry.GlyphRegistry;
+import com.hollingsworth.arsnouveau.api.registry.SpellCasterRegistry;
+import com.hollingsworth.arsnouveau.api.spell.AbstractCaster;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.util.ManaUtil;
@@ -10,15 +13,19 @@ import com.hollingsworth.arsnouveau.client.gui.book.GuiSpellBook;
 import com.hollingsworth.arsnouveau.client.gui.buttons.CraftingButton;
 import com.hollingsworth.arsnouveau.client.gui.buttons.GlyphButton;
 import com.hollingsworth.arsnouveau.common.items.Glyph;
+import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -64,18 +71,61 @@ public final class ArsManaHudEvents {
      * Feature 1: append "Mana Cost: Xmana" right after the glyph level line of
      * glyph items in inventories and JEI. The glyph level line uses the same
      * localization key as the spell book GUI tooltip, so the insertion logic is shared.
+     * <p>
+     * Caster tools other than the spell book (Caster Tome, Enchanter's Eye, ...)
+     * get the mana cost of their currently selected spell appended to the tooltip;
+     * the spell book itself is skipped because its tooltip already lists its spells.
      */
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
-        if (!(event.getItemStack().getItem() instanceof Glyph glyph)) {
+        ItemStack stack = event.getItemStack();
+        if (stack.getItem() instanceof Glyph glyph) {
+            AbstractSpellPart part = glyph.spellPart;
+            if (part == null) {
+                return;
+            }
+            insertCostLineAfterLevel(event.getToolTip(), part,
+                    Component.translatable("hud." + ArsManaHud.MODID + ".cost", partCost(part)));
             return;
         }
-        AbstractSpellPart part = glyph.spellPart;
-        if (part == null) {
-            return;
+        if (!(stack.getItem() instanceof SpellBook) && stack.getItem() instanceof ICasterTool) {
+            AbstractCaster<?> caster = SpellCasterRegistry.from(stack);
+            if (caster == null) {
+                return;
+            }
+            int slot = caster.getCurrentSlot();
+            Spell spell = caster.getSpell(slot);
+            if (spell == null || spell.isEmpty()) {
+                return;
+            }
+            addCostLineAboveAdvanced(event.getToolTip(),
+                    Component.translatable("hud." + ArsManaHud.MODID + ".cost",
+                            spellCost(event.getEntity(), spell, stack)),
+                    stack);
         }
-        insertCostLineAfterLevel(event.getToolTip(), part,
-                Component.translatable("hud." + ArsManaHud.MODID + ".cost", partCost(part)));
+    }
+
+    /**
+     * Adds the cost line to the tooltip, inserting it above the F3+H advanced
+     * tooltip block when present. NeoForge 1.21.1 appends that block (the item
+     * registry name and "N Components", both dark gray) at the very end of the
+     * tooltip before firing ItemTooltipEvent, so a plain append would place the
+     * cost line below the advanced info. Falls back to appending when the block
+     * is absent (e.g. advanced tooltips disabled or JEI).
+     */
+    private static void addCostLineAboveAdvanced(List<Component> tooltip, Component costLine, ItemStack stack) {
+        String registryKey = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        for (int i = 0; i < tooltip.size(); i++) {
+            Component line = tooltip.get(i);
+            TextColor color = line.getStyle().getColor();
+            if (color != null
+                    && color.getValue() == ChatFormatting.DARK_GRAY.getColor().intValue()
+                    && line.getString().equals(registryKey)) {
+                tooltip.add(i, costLine);
+                return;
+            }
+        }
+        tooltip.add(costLine);
     }
 
     /**
