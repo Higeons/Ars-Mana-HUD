@@ -1,14 +1,25 @@
 # Ars Mana HUD
 
-一个新生魔艺附属模组，为模组内的多种与魔力有关的物品提供增强显示。
+一个新生魔艺（Ars Nouveau）附属模组，为模组内的多种与魔力有关的物品提供增强显示。
 
-本模组代码均由deepseek-v4-flash生成
+本模组代码均由 deepseek-v4-flash 生成
 
-本分支为 **NeoForge 1.21.1** 版本，由 Forge 1.20.1 版（`main` 分支）人工移植而来，功能与 main 0.4.3 对齐。
+> 本文档是整个仓库唯一的说明文档：`main`（Forge 1.20.1）与 `neoforge-1.21.1`（NeoForge 1.21.1）两个分支中的 `README.md` 保持一致。维护约定另见两分支中的 `AGENTS.md`。
 
 ---
 
-### 功能
+## 版本对照
+
+| 版本 | 分支 | 模组加载器 | Minecraft | 新生魔艺 | 可选前置 Jade | 构建产物 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Forge 版 | `main` | Forge `47.4.5` | `1.20.1` | `4.12.7.264` | `11.13.2` | `build/libs/arsmanahud-<mod_version>.jar` |
+| NeoForge 版 | `neoforge-1.21.1` | NeoForge `21.1.235` | `1.21.1` | `5.13.0` | `15.10.6` | `build/libs/arsmanahud-<mod_version>.jar` |
+
+两个分支共享同一套功能设计，但代码与构建体系各自独立，属于**无关联历史**：功能同步一律采用人工移植，**禁止 `git merge` / `cherry-pick`**。
+
+---
+
+## 功能
 
 ### 1. 魔力值显示（当前 / 最大）
 在魔力条上叠加显示 `当前魔力 / 最大魔力`（如 `150 / 200`），文本实时跟随魔力条位置，可自定义 `MANABAR_X_OFFSET` / `MANABAR_Y_OFFSET` 调整偏移。
@@ -32,7 +43,7 @@
 > HUD 文本在隐藏 GUI 或离开游戏时不会渲染；魔力上限与魔力恢复速度变化时才刷新文本。
 
 ### 6. 容器内容物精确数量显示（Jade）
-需要安装可选前置 **Jade** 。视线看向新生魔艺容器时，在 Jade 提示框内显示精确数量：
+需要安装可选前置 **Jade**。视线看向新生魔艺容器时，在 Jade 提示框内显示精确数量：
 - 魔源罐（含创造魔源罐）：`魔源量：X/Y`，X 为当前魔源量，Y 为最大魔源量；
 - 药水罐：`XX药水：X/Y mB`，XX 为药水名称，X 为当前药水量，Y 为最大药水量；
 - 魔源通道（农艺/炼金/菌丝/生死/火山）：`缓存量：X/Y`，显示其内部魔源缓存量；
@@ -40,11 +51,28 @@
 
 ---
 
-### 模组依赖
+## 安装
 
-- NeoForge `21.1.235`
-- 新生魔艺（Ars Nouveau） `5.13.0`
-- （可选）Jade 🔍 `15.10.6`
+1. 安装对应 Minecraft 版本的模组加载器：Forge `47.4.5`（1.20.1）或 NeoForge `21.1.235`（1.21.1）；
+2. 安装对应版本的**新生魔艺（Ars Nouveau）**（版本见上方对照表）；
+3. 将对应版本的 jar 放入游戏 `mods/` 目录（可从 Releases 页面下载，或按下文自行构建）；
+4. （可选）安装 **Jade**，以获得第 6 项容器数量显示。
+
+## 从源码构建
+
+两个版本目录各自是独立的 Gradle 工程，需分别构建（Gradle 使用 JDK 21 运行；Forge 版以 Java 17 编译，NeoForge 版以 Java 21 编译；构建过程需要联网下载依赖）：
+
+```bash
+# Forge 1.20.1（对应 main 分支）
+cd arsmanahud-1.20.1
+./gradlew build
+
+# NeoForge 1.21.1（对应 neoforge-1.21.1 分支）
+cd arsmanahud-1.21.1
+./gradlew build
+```
+
+构建产物位于各自目录的 `build/libs/arsmanahud-<mod_version>.jar`。新生魔艺与 Jade 均只以 `compileOnly` / `runtimeOnly` 引入，**不会打包进发布的 jar**。
 
 ---
 

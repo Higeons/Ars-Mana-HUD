@@ -29,7 +29,7 @@
 | 事件处理 | `src/main/java/com/arsmanahud/client/ArsManaHudEvents.java` |
 | 覆盖层注册 | `src/main/java/com/arsmanahud/client/ManaHudClient.java` |
 | 版本号 | `gradle.properties` 中的 `mod_version` |
-| 构建产物 | `build/libs/arsmanahud-1.20.1-<mod_version>.jar` |
+| 构建产物 | `build/libs/arsmanahud-<mod_version>.jar`（`archivesName = mod_id`） |
 
 > NeoForge 版的源码结构类似，但模组 API 与装配方式不同；涉及该版本时以该目录实际源码为准，不要照搬 Forge 版代码。
 
@@ -98,7 +98,7 @@ git push origin v0.2.1
 1. **Choose a tag** 选择刚推送的 `v0.2.1`；
 2. **Release title** 填 `Ars Mana HUD v0.2.1`（NeoForge 版建议加注 `(NeoForge 1.21.1)`）；
 3. 描述可粘贴 Agent 提供的发布说明草稿；
-4. 把 jar 拖入 **Attach binaries**：`build\libs\arsmanahud-1.20.1-0.2.1.jar`（NeoForge 版路径同理）；
+4. 把 jar 拖入 **Attach binaries**：`build\libs\arsmanahud-0.2.1.jar`（NeoForge 版路径同理）；
 5. 点击 **Publish release**。
 
 > 提示：GitHub 上传 `.jar` 偶尔会提示"可能是恶意软件"，属常见误报，确认是自行构建的文件即可继续。
@@ -142,6 +142,7 @@ git tag -d v0.2.0                  # 删除错误标签（本地）
 ## 版本与分支约定
 
 - 分支：`main`（Forge 1.20.1）与 `neoforge-1.21.1`（NeoForge 1.21.1）。**两分支无关联历史，禁止 merge / cherry-pick 互通**。
+- `README.md` 是整个仓库**唯一的说明文档**，两分支内容必须完全一致（含版本对照表）。改动 README 后必须在另一分支同步同一份内容并各自本地提交。
 - Tag 格式：`vX.Y.Z`，与对应版本目录 `gradle.properties` 的 `mod_version` 一致，使用附注标签（`git tag -a`）。
 - 两版本可各自独立发版、独立打 tag；NeoForge 版发布说明应注明"移植自 main 的哪个版本 / commit"。
 - 版本号只通过各自 `gradle.properties` 的 `mod_version` 维护，构建产物文件名会自动跟随。
